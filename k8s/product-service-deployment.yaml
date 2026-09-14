@@ -17,10 +17,12 @@ spec:
         app: product-service
 
     spec:
+      imagePullSecrets:
+        - name: ghcr-secret
+
       containers:
         - name: product-service
-          image: ecommerce/product-service:1.0
-
+          image: ghcr.io/riazlearning/product-service:c25fb0ff56dcd710d6ecd02620b8212aa2cff0ab
           imagePullPolicy: IfNotPresent
 
           ports:
@@ -41,7 +43,7 @@ spec:
 
             - name: DB_PASSWORD
               value: postgres
-          
+
           readinessProbe:
             httpGet:
               path: /actuator/health
@@ -55,10 +57,11 @@ spec:
               port: 8081
             initialDelaySeconds: 30
             periodSeconds: 10
-          
+
           startupProbe:
             httpGet:
               path: /actuator/health
               port: 8081
             failureThreshold: 20
             periodSeconds: 5
+            
