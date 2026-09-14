@@ -1,0 +1,40 @@
+name: Product Service CI
+
+on:
+  push:
+    branches:
+      - main
+
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    defaults:
+      run:
+        working-directory: product-service
+
+    steps:
+
+      # 1. Checkout source code
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      # 2. Install Java
+      - name: Set up Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '21'
+          cache: maven
+
+      # 3. Build and test
+      - name: Build and test
+        run: ./mvnw clean verify
+
+      # 4. Build Docker image
+      - name: Build Docker image
+        run: docker build -t ecommerce/product-service:${{ github.sha }} .

@@ -11,12 +11,13 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-
 import java.util.List;
 import java.util.UUID;
+import org.springframework.web.bind.annotation.RequestBody;
+
 
 @RestController
 @RequestMapping("/api/v1/products")
@@ -37,9 +38,17 @@ public class ProductController {
     }
 
     @GetMapping
-    public ResponseEntity<List<ProductResponseRecord>> getAllProducts() {
-        return ResponseEntity.ok(productService.getAllProducts());
-    }
+    public ResponseEntity<List<ProductResponseRecord>> getAllProducts(
+        @RequestHeader(value = "X-Gateway-Request-ID", required = false)
+        String gatewayRequestId) {
+
+    System.out.println(
+            "Gateway Request ID received: " + gatewayRequestId
+    );
+
+    // existing logic
+    return ResponseEntity.ok(productService.getAllProducts());
+}
 
     @GetMapping("/{id}")
     public ResponseEntity<ProductResponseRecord> getProductById(@PathVariable UUID id) {

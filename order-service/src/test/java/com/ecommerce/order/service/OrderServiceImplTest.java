@@ -1,22 +1,27 @@
 package com.ecommerce.order.service;
 
+import com.ecommerce.order.client.ProductClient;
 import com.ecommerce.order.dto.OrderItemRequest;
 import com.ecommerce.order.dto.OrderRequest;
 import com.ecommerce.order.dto.OrderResponse;
+import com.ecommerce.order.dto.ProductResponseRecord;
 import com.ecommerce.order.entity.Order;
 import com.ecommerce.order.entity.OrderItem;
 import com.ecommerce.order.entity.OrderStatus;
 import com.ecommerce.order.repository.OrderRepository;
 import com.ecommerce.order.service.impl.OrderServiceImpl;
+import io.micrometer.observation.ObservationRegistry;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.math.BigDecimal;
+import java.time.Instant;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
@@ -33,6 +38,12 @@ class OrderServiceImplTest {
 
     @Mock
     private OrderRepository orderRepository;
+
+    @Mock
+    private ProductClient productClient;
+
+    @Spy
+    private ObservationRegistry observationRegistry = ObservationRegistry.NOOP;
 
     @InjectMocks
     private OrderServiceImpl orderService;
@@ -53,6 +64,12 @@ class OrderServiceImplTest {
         OrderItemRequest item1 = new OrderItemRequest(productId1, 2, new BigDecimal("25.00"));
         OrderItemRequest item2 = new OrderItemRequest(productId2, 1, new BigDecimal("50.00"));
         OrderRequest request = new OrderRequest(100L, List.of(item1, item2));
+
+        ProductResponseRecord product1 = new ProductResponseRecord(productId1, "Product 1", "Desc 1", new BigDecimal("25.00"), 10, Instant.now());
+        ProductResponseRecord product2 = new ProductResponseRecord(productId2, "Product 2", "Desc 2", new BigDecimal("50.00"), 5, Instant.now());
+
+        when(productClient.getProduct(productId1)).thenReturn(product1);
+        when(productClient.getProduct(productId2)).thenReturn(product2);
 
         when(orderRepository.save(any(Order.class))).thenAnswer(invocation -> {
             Order savedOrder = invocation.getArgument(0);

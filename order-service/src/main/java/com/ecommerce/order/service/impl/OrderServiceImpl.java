@@ -38,7 +38,7 @@ public class OrderServiceImpl implements OrderService {
     public OrderServiceImpl(ProductClient productClient, OrderRepository orderRepository, ObservationRegistry observationRegistry) {
         this.productClient = productClient;
         this.orderRepository = orderRepository;
-        this.observationRegistry = observationRegistry;
+        this.observationRegistry = observationRegistry != null ? observationRegistry : ObservationRegistry.NOOP;
     }
 
     @Override

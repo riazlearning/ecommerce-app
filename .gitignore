@@ -37,3 +37,7 @@ logs/
 # Maven temporary files
 .mvn/timing.properties
 .mvn/wrapper/maven-wrapper.jar
+
+# Environment variables
+*.env
+.env
